@@ -56,10 +56,10 @@
         <a href="training.html">Training</a>
     </nav>
     <div class="container">
-        <div class="workout-header">Måndag</div>
+        <div class="workout-header">Fredag</div>
         <div style="text-align: center; margin: 20px 0;">
             <span style="font-family: 'Courier New', monospace; color: #00FF00; user-select: none; font-weight: bold; font-size: 1.5rem;">
-              ▂▃▅▇ Bröst Triceps Core ▇▅▃▂
+              ▂▃▅▇ Rygg Bisceps Core ▇▅▃▂
             </span>
         </div>
         <table>
@@ -68,36 +68,119 @@
                     <th>Övning</th>
                     <th>Reps</th>
                     <th>Vikt (kg)</th>
-                    <th>Övrigt</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Bänkpress</td>
-                    <td>3x8</td>
-                    <td>60</td>
-                    <td>Kontrollerad tempo</td>
-                </tr>
-                <tr>
-                    <td>Hantelpress</td>
+                    <td>One arm row</td>
                     <td>3x12</td>
                     <td>12</td>
-                    <td>Superset med dips</td>
                 </tr>
                 <tr>
-                    <td>Dips</td>
-                    <td>3x10</td>
-                    <td>Egen kroppsvikt</td>
-                    <td>Full rörelse</td>
+                    <td>Curls</td>
+                    <td>3x12</td>
+                    <td>7</td>
                 </tr>
                 <tr>
-                    <td>Plankan</td>
-                    <td>3 x 1 min</td>
-                    <td>-</td>
-                    <td>Håll rak kropp</td>
+                    <td>Hammer curls</td>
+                    <td>3x12</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>Reverse snow angels</td>
+                    <td>3x12</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AB Roller</td>
+                    <td>3x12</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Bent over reverse flys</td>
+                    <td>3x12</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Banded face pulls</td>
+                    <td>3x12</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <div class="container">
+        <h2>Timers</h2>
+    
+        <div class="timer-section">
+            <div class="timer" id="timer3">02:00</div>
+            <button class="terminal-button" id="startBtn3">Starta 2 min</button>
+            <button class="terminal-button" id="resetBtn3">Nollställ</button>
+        </div>
+        
+        <div class="timer-section">
+            <div class="timer" id="timer1">01:00</div>
+            <button class="terminal-button" id="startBtn1">Starta 1 min</button>
+            <button class="terminal-button" id="resetBtn1">Nollställ</button>
+        </div>
+    
+        <div class="timer-section">
+            <div class="timer" id="timer2">00:30</div>
+            <button class="terminal-button" id="startBtn2">Starta 30 sek</button>
+            <button class="terminal-button" id="resetBtn2">Nollställ</button>
+        </div>
+    </div>
+    
+    <script>
+        function createTimer(timerId, startBtnId, resetBtnId, totalSeconds) {
+            const timerDisplay = document.getElementById(timerId);
+            const startBtn = document.getElementById(startBtnId);
+            const resetBtn = document.getElementById(resetBtnId);
+    
+            let timeLeft = totalSeconds;
+            let timerInterval = null;
+    
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            }
+    
+            function updateDisplay() {
+                timerDisplay.textContent = formatTime(timeLeft);
+            }
+    
+            function startTimer() {
+                if (timerInterval) return;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        alert(`Tiden för ${timerId} är slut!`);
+                    }
+                }, 1000);
+            }
+    
+            function resetTimer() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timeLeft = totalSeconds;
+                updateDisplay();
+            }
+    
+            updateDisplay();
+    
+            startBtn.addEventListener('click', startTimer);
+            resetBtn.addEventListener('click', resetTimer);
+        }
+    
+        createTimer('timer3', 'startBtn3', 'resetBtn3', 120);
+        createTimer('timer1', 'startBtn1', 'resetBtn1', 60);
+        createTimer('timer2', 'startBtn2', 'resetBtn2', 30);
+    </script>
 </body>
 </html>

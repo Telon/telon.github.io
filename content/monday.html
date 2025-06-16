@@ -111,5 +111,77 @@
             </tbody>
         </table>
     </div>
+    <div class="container">
+        <h2>Timers</h2>
+    
+        <div class="timer-section">
+            <div class="timer" id="timer3">02:00</div>
+            <button class="terminal-button" id="startBtn3">Starta 2 min</button>
+            <button class="terminal-button" id="resetBtn3">Nollställ</button>
+        </div>
+        
+        <div class="timer-section">
+            <div class="timer" id="timer1">01:00</div>
+            <button class="terminal-button" id="startBtn1">Starta 1 min</button>
+            <button class="terminal-button" id="resetBtn1">Nollställ</button>
+        </div>
+    
+        <div class="timer-section">
+            <div class="timer" id="timer2">00:30</div>
+            <button class="terminal-button" id="startBtn2">Starta 30 sek</button>
+            <button class="terminal-button" id="resetBtn2">Nollställ</button>
+        </div>
+    </div>
+    
+    <script>
+        function createTimer(timerId, startBtnId, resetBtnId, totalSeconds) {
+            const timerDisplay = document.getElementById(timerId);
+            const startBtn = document.getElementById(startBtnId);
+            const resetBtn = document.getElementById(resetBtnId);
+    
+            let timeLeft = totalSeconds;
+            let timerInterval = null;
+    
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            }
+    
+            function updateDisplay() {
+                timerDisplay.textContent = formatTime(timeLeft);
+            }
+    
+            function startTimer() {
+                if (timerInterval) return;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        alert(`Tiden för ${timerId} är slut!`);
+                    }
+                }, 1000);
+            }
+    
+            function resetTimer() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timeLeft = totalSeconds;
+                updateDisplay();
+            }
+    
+            updateDisplay();
+    
+            startBtn.addEventListener('click', startTimer);
+            resetBtn.addEventListener('click', resetTimer);
+        }
+    
+        createTimer('timer3', 'startBtn3', 'resetBtn3', 120);
+        createTimer('timer1', 'startBtn1', 'resetBtn1', 60);
+        createTimer('timer2', 'startBtn2', 'resetBtn2', 30);
+    </script>
 </body>
 </html>
