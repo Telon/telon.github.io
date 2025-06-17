@@ -126,3 +126,14 @@ nav a:hover {
     color: #fff;
     border-color: #fff;
 }
+a.semester {
+    background-color: #004400;  /* Mörkare grön än vanlig */
+    border-color: #00FF00;     /* Behåll grön ram för enhetlighet */
+    color: #AAFFAA;            /* Ljusare grön text */
+}
+
+a.semester:hover {
+    background-color: #007700; /* Lite ljusare grön vid hover */
+    color: #FFFFFF;            /* Vit text vid hovring */
+    border-color: #FFFFFF;     /* Vit ram vid hovring */
+}
