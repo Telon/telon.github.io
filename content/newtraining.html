@@ -14,7 +14,7 @@
         #app {
             background-color: #1f1f1f;
             border: 1px solid #333;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3-2px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
         }
         .main-button {
             background-color: #8b5cf6;
@@ -74,12 +74,14 @@
     
     <script>
         const LOCAL_STORAGE_KEY = 'trainingAppData';
-        const APP_VERSION = '1.2.0'; // Updated version number
+        const APP_VERSION = '1.2.0';
         const appElement = document.getElementById('app');
         const editModal = document.getElementById('editModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalInput = document.getElementById('modalInput');
         const editForm = document.getElementById('editForm');
+        
+        const WEBSCHEMA_URL = 'https://telon.github.io/content/schema_backup.json';
 
         let appState = {
             version: APP_VERSION,
@@ -114,13 +116,10 @@
                 if (storedState) {
                     const parsedState = JSON.parse(storedState);
                     
-                    // New logic to handle version updates
                     if (parsedState.version !== APP_VERSION) {
                         if (confirm("En ny version av appen är tillgänglig. Vill du uppdatera? (Din data sparas)")) {
-                             // Create a temporary backup of old data before overwriting
                             const oldData = JSON.stringify(parsedState);
                             
-                            // Load the new default state
                             Object.assign(appState, {
                                 version: APP_VERSION,
                                 view: 'mainMenu',
@@ -138,7 +137,6 @@
                                 currentDay: null
                             });
 
-                            // Try to re-import the old data on top of the new state
                             try {
                                 const oldParsed = JSON.parse(oldData);
                                 Object.assign(appState, oldParsed);
@@ -149,19 +147,17 @@
                                 console.error('Kunde inte återställa gammal data', e);
                             }
                             
-                            saveState(); // Save the new, updated state
+                            saveState();
                             alert('Appen har uppdaterats och startar om med den nya designen.');
-                            location.reload(); // Force a full page refresh
-                            return; // Stop further execution
+                            location.reload();
+                            return;
                         }
                     }
 
-                    // For existing users, add 'Gym' if it's missing from old saved state
                     if (!parsedState.schema['Gym']) {
                         parsedState.schema['Gym'] = { focus: 'Helkroppspass', workouts: [] };
                     }
                     Object.assign(appState, parsedState);
-
                 }
             } catch (e) {
                 console.error('Kunde inte ladda från lokal lagring', e);
@@ -364,40 +360,32 @@
         }
         
         function renderImportExportView() {
-            const currentData = JSON.stringify(appState, null, 2);
             appElement.innerHTML = `
                 ${renderHeaderWithBackButton('Import/Export', 'mainMenu')}
-                <p class="text-gray-400 mb-4 text-center">Hantera din data genom att exportera eller importera en backup-fil.</p>
+                <p class="text-gray-400 mb-4 text-center">Hantera din data med filbaserade alternativ.</p>
                 
                 <div class="mb-4">
-                    <label for="exportData" class="block text-gray-300 font-bold mb-2">Exportera som text:</label>
-                    <textarea id="exportData" readonly class="w-full h-48 p-3 card rounded-lg bg-gray-800 font-mono text-sm focus:outline-none border-gray-700">${currentData}</textarea>
-                    <button class="w-full bg-purple-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-purple-700 transition duration-300" onclick="copyToClipboard();">
-                        Kopiera till urklipp
-                    </button>
                     <button class="w-full bg-blue-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-blue-700 transition duration-300" onclick="downloadBackup();">
-                        Ladda ner som fil
-                    </button>
-                </div>
-                
-                <div class="mb-6">
-                    <label for="importFile" class="block text-gray-300 font-bold mb-2">Importera från fil:</label>
-                    <input type="file" id="importFile" accept=".json" class="w-full text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-purple-400 hover:file:bg-gray-600">
-                    <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="uploadBackup();">
-                        Importera fil
+                        Spara träning
                     </button>
                 </div>
 
                 <div class="mb-6">
-                    <label for="importData" class="block text-gray-300 font-bold mb-2">Importera från text (legacy):</label>
-                    <textarea id="importData" placeholder="Klistra in din backup-data här..." class="w-full h-48 p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 border-gray-700"></textarea>
-                    <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="importData();">
-                        Importera text
+                    <label for="importFile" class="block text-gray-300 font-bold mb-2">Ladda upp träning:</label>
+                    <input type="file" id="importFile" accept=".json" class="w-full text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-purple-400 hover:file:bg-gray-600">
+                    <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="uploadBackup();">
+                        Ladda upp träning
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <button class="w-full bg-purple-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-purple-700 transition duration-300" onclick="importFromWebsiteSchema()">
+                        Hämta färdigt schema
                     </button>
                 </div>
             `;
         }
-
+        
         // --- Data manipulation functions ---
         
         function addWorkout(name, reps, sets, weights, other) {
@@ -529,22 +517,6 @@
         
         // --- Backup functions ---
         
-        function copyToClipboard() {
-            const textarea = document.getElementById('exportData');
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(textarea.value).then(() => {
-                    alert('Data kopierad till urklipp! ✅');
-                }).catch(err => {
-                    console.error('Kunde inte kopiera text: ', err);
-                    alert('Kunde inte kopiera data, kopiera manuellt.');
-                });
-            } else {
-                textarea.select();
-                document.execCommand('copy');
-                alert('Data kopierad till urklipp! ✅');
-            }
-        }
-
         function downloadBackup() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
             const downloadAnchorNode = document.createElement('a');
@@ -583,22 +555,30 @@
             reader.readAsText(file);
         }
 
-        function importData() {
+        async function importFromWebsiteSchema() {
             try {
-                const textarea = document.getElementById('importData');
-                const newData = JSON.parse(textarea.value);
+                if (!WEBSCHEMA_URL || WEBSCHEMA_URL.includes('dittanvandarnamn')) {
+                    throw new Error('Webschemats URL är inte inställd korrekt i koden.');
+                }
                 
-                if (newData.schema && newData.logs && typeof newData.schema === 'object' && Array.isArray(newData.logs)) {
-                    Object.assign(appState, newData);
+                const response = await fetch(WEBSCHEMA_URL);
+                if (!response.ok) {
+                    throw new Error(`Kunde inte ladda filen. Kontrollera att länken är korrekt och att filen finns. Status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                if (data.schema && typeof data.schema === 'object') {
+                    appState.schema = data.schema;
                     saveState();
-                    alert('Data har importerats framgångsrikt! 🎉');
+                    alert('Schemat har importerats framgångsrikt från webbplatsen! 🎉');
                     appState.view = 'mainMenu';
                     render();
                 } else {
-                    throw new Error('Ogiltigt dataformat. Kontrollera att din backup innehåller "schema" och "logs".');
+                    throw new Error('Ogiltigt dataformat i JSON-filen. Kontrollera att filen innehåller ett "schema".');
                 }
             } catch (e) {
-                alert(`Kunde inte importera data. Fel: ${e.message}`);
+                alert(`Ett fel uppstod: ${e.message}`);
+                console.error('Fetch error:', e);
             }
         }
         
