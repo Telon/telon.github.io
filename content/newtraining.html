@@ -197,7 +197,6 @@
                 const weights = document.getElementById('workoutWeights').value;
                 if (name && reps && weights) {
                     addWorkout(name, reps, weights);
-                    // Clear the form fields after successful addition
                     document.getElementById('workoutName').value = '';
                     document.getElementById('workoutReps').value = '';
                     document.getElementById('workoutWeights').value = '';
@@ -224,26 +223,37 @@
                 </div>
             `;
         }
-
+        
         function renderImportExportView() {
             const currentData = JSON.stringify(appState, null, 2);
             appElement.innerHTML = `
                 ${renderHeaderWithBackButton('Import/Export', 'mainMenu')}
-                <p class="text-gray-700 mb-4 text-center">Använd denna data för att säkerhetskopiera din app. Klistra in data i rutan nedan och klicka på "Importera" för att ladda din backup.</p>
+                <p class="text-gray-700 mb-4 text-center">Hantera din data genom att exportera eller importera en backup-fil.</p>
                 
                 <div class="mb-4">
-                    <label for="exportData" class="block text-gray-700 font-bold mb-2">Exportera data:</label>
+                    <label for="exportData" class="block text-gray-700 font-bold mb-2">Exportera som text:</label>
                     <textarea id="exportData" readonly class="w-full h-48 p-3 border border-gray-300 rounded-lg bg-gray-100 font-mono text-sm focus:outline-none">${currentData}</textarea>
                     <button class="w-full bg-blue-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-blue-700 transition duration-300" onclick="copyToClipboard();">
                         Kopiera till urklipp
                     </button>
+                    <button class="w-full bg-indigo-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-indigo-700 transition duration-300" onclick="downloadBackup();">
+                        Ladda ner som fil
+                    </button>
                 </div>
                 
                 <div class="mb-6">
-                    <label for="importData" class="block text-gray-700 font-bold mb-2">Importera data:</label>
+                    <label for="importFile" class="block text-gray-700 font-bold mb-2">Importera från fil:</label>
+                    <input type="file" id="importFile" accept=".json" class="w-full text-gray-800 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-blue-700 hover:file:bg-gray-300">
+                    <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="uploadBackup();">
+                        Importera fil
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <label for="importData" class="block text-gray-700 font-bold mb-2">Importera från text (legacy):</label>
                     <textarea id="importData" placeholder="Klistra in din backup-data här..." class="w-full h-48 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="importData();">
-                        Importera
+                        Importera text
                     </button>
                 </div>
             `;
@@ -273,7 +283,6 @@
             const dayData = appState.schema[appState.currentDay];
             if (dayData.workouts.length > 0) {
                 const today = new Date().toLocaleDateString('sv-SE');
-                // Check if a log for this date already exists to prevent duplicates
                 const existingLog = appState.logs.find(log => log.date === today);
                 if (existingLog) {
                     alert('Du har redan loggat ett pass idag.');
@@ -372,7 +381,47 @@
                 alert('Data kopierad till urklipp! ✅');
             }
         }
+
+        // NEW: Function to download backup as a file
+        function downloadBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "träningsapp_backup_" + new Date().toISOString().slice(0, 10) + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
         
+        // NEW: Function to handle file upload for import
+        function uploadBackup() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Välj en fil att importera.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const newData = JSON.parse(e.target.result);
+                    if (newData.schema && newData.logs && typeof newData.schema === 'object' && Array.isArray(newData.logs)) {
+                        Object.assign(appState, newData);
+                        saveState();
+                        alert('Data har importerats framgångsrikt från fil! 🎉');
+                        appState.view = 'mainMenu';
+                        render();
+                    } else {
+                        throw new Error('Ogiltigt dataformat i filen.');
+                    }
+                } catch (e) {
+                    alert(`Kunde inte importera fil. Fel: ${e.message}`);
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function importData() {
             try {
                 const textarea = document.getElementById('importData');
