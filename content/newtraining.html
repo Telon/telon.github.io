@@ -129,8 +129,9 @@
 
         function renderSchemaView() {
             let daysHtml = Object.keys(appState.schema).map(day => `
-                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
-                    ${day} - ${appState.schema[day].focus}
+                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200 text-left" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
+                    <div class="text-xl font-bold">${day}</div>
+                    <div class="text-sm text-gray-600 mt-1">Fokus: ${appState.schema[day].focus}</div>
                 </button>
             `).join('');
 
@@ -494,3 +495,4 @@
     </script>
 </body>
 </html>
+
