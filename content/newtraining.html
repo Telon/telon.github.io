@@ -190,7 +190,7 @@
         function renderMainMenu() {
             appElement.innerHTML = `
                 <div class="text-center">
-                    <h1 class="text-3xl font-bold mb-8 text-gray-100">The Workout Blueprint</h1>
+                    <h1 class="text-3xl font-bold mb-8 text-gray-100">FlexLog</h1>
                     <div class="space-y-4">
                         <button class="w-full main-button py-4 px-6 flex items-center justify-center space-x-3" onclick="appState.view = 'schema'; saveState(); render();">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -234,7 +234,7 @@
                 if (appState.schema.hasOwnProperty(day)) {
                     daysHtml += `
                         <button class="w-full card text-gray-100 font-semibold py-4 px-6 flex justify-between items-center" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
-                            <div>
+                            <div class="text-left">
                                 <div class="text-xl font-bold">${day}</div>
                                 <div class="text-sm text-gray-400 mt-1">${appState.schema[day].focus}</div>
                             </div>
@@ -590,4 +590,3 @@
     </script>
 </body>
 </html>
-
