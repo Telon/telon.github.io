@@ -102,13 +102,13 @@
                 <div class="text-center">
                     <h1 class="text-3xl font-bold mb-8 text-gray-800">Min Träningsapp 💪</h1>
                     <div class="space-y-4">
-                        <button class="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'schema'; render();">
+                        <button class="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'schema'; saveState(); render();">
                             Schema
                         </button>
-                        <button class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-green-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'log'; render();">
+                        <button class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-green-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'log'; saveState(); render();">
                             Logg
                         </button>
-                        <button class="w-full bg-yellow-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-105" onclick="appState.view = 'importExport'; render();">
+                        <button class="w-full bg-yellow-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-105" onclick="appState.view = 'importExport'; saveState(); render();">
                             Import/Export (Backup)
                         </button>
                     </div>
@@ -119,7 +119,7 @@
         function renderHeaderWithBackButton(title, backToView) {
             return `
                 <div class="flex items-center justify-between mb-6">
-                    <button class="text-gray-500 hover:text-gray-700 font-bold text-lg" onclick="appState.view = '${backToView}'; render();">
+                    <button class="text-gray-500 hover:text-gray-700 font-bold text-lg" onclick="appState.view = '${backToView}'; saveState(); render();">
                         ←
                     </button>
                     <h2 class="text-2xl font-bold text-gray-800 text-center flex-grow">${title}</h2>
@@ -129,7 +129,7 @@
 
         function renderSchemaView() {
             let daysHtml = Object.keys(appState.schema).map(day => `
-                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; render();">
+                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
                     ${day} - ${appState.schema[day].focus}
                 </button>
             `).join('');
@@ -414,7 +414,6 @@
             }
         }
 
-        // NEW: Function to download backup as a file
         function downloadBackup() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
             const downloadAnchorNode = document.createElement('a');
@@ -425,7 +424,6 @@
             downloadAnchorNode.remove();
         }
         
-        // NEW: Function to handle file upload for import
         function uploadBackup() {
             const fileInput = document.getElementById('importFile');
             const file = fileInput.files[0];
@@ -459,7 +457,6 @@
                 const textarea = document.getElementById('importData');
                 const newData = JSON.parse(textarea.value);
                 
-                // Enhanced validation
                 if (newData.schema && newData.logs && typeof newData.schema === 'object' && Array.isArray(newData.logs)) {
                     Object.assign(appState, newData);
                     saveState();
