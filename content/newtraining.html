@@ -68,6 +68,10 @@
                 const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
                 if (storedState) {
                     const parsedState = JSON.parse(storedState);
+                    // Add 'Gym' if it's missing from old saved state
+                    if (!parsedState.schema['Gym']) {
+                        parsedState.schema['Gym'] = { focus: 'Helkroppspass', workouts: [] };
+                    }
                     Object.assign(appState, parsedState);
                 }
             } catch (e) {
@@ -129,12 +133,17 @@
         }
 
         function renderSchemaView() {
-            let daysHtml = Object.keys(appState.schema).map(day => `
-                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200 text-left" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
-                    <div class="text-xl font-bold">${day}</div>
-                    <div class="text-sm text-gray-600 mt-1">Fokus: ${appState.schema[day].focus}</div>
-                </button>
-            `).join('');
+            let daysHtml = '';
+            for (const day in appState.schema) {
+                if (appState.schema.hasOwnProperty(day)) {
+                    daysHtml += `
+                        <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200 text-left" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; saveState(); render();">
+                            <div class="text-xl font-bold">${day}</div>
+                            <div class="text-sm text-gray-600 mt-1">Fokus: ${appState.schema[day].focus}</div>
+                        </button>
+                    `;
+                }
+            }
 
             appElement.innerHTML = `
                 ${renderHeaderWithBackButton('Schema', 'mainMenu')}
