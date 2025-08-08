@@ -282,7 +282,7 @@
                 ${renderHeaderWithBackButton(appState.currentDay, 'schema')}
                 
                 <div class="flex items-center justify-between space-x-2 mb-4 text-gray-300">
-                    <p class="text-xl font-semibold">Fokus: ${dayData.focus}</p>
+                    <p class="text-xl font-semibold">${dayData.focus}</p>
                     <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('focus', null, null, '${appState.currentDay}');">Ändra fokus</button>
                 </div>
                 
@@ -610,4 +610,3 @@
     </script>
 </body>
 </html>
-
