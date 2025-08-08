@@ -1,30 +1,403 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Training</title>
-    <link rel="icon" href="../logo.png" type="image/png">
-    <link rel="stylesheet" href="../css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Träningsapp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
 </head>
-<body>
-    <nav>
-        <a href="../index.html">Home</a>
-        <a href="server.html">Server</a>
-        <a href="training.html">Training</a>
-    </nav>
-    <div class="container">
-        <h1>Träning</h1>
-        <ul>
-            <li><a href="monday.html">Måndag</a></li>
-            <li><a href="tuesday.html">Tisdag</a></li>
-            <li><a href="wednesday.html">Onsdag</a></li>
-            <li><a href="thursday.html">Torsdag</a></li>
-            <li><a href="friday.html">Fredag</a></li>
-            <li><a href="saturday.html">Lördag</a></li>
-            <li><a href="sunday.html">Söndag</a></li>
-            <li><a href="semester/semester.html" class="semester">Semester</a></li>
-        </ul>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div id="app" class="bg-white shadow-xl rounded-2xl w-full max-w-md p-6 m-4 relative">
+        </div>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-xl font-bold mb-4" id="modalTitle"></h3>
+            <form id="editForm">
+                <input type="text" id="modalInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" required>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400" onclick="closeModal()">Avbryt</button>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700">Spara</button>
+                </div>
+            </form>
+        </div>
     </div>
+    
+    <script>
+        const LOCAL_STORAGE_KEY = 'trainingAppData';
+        const appElement = document.getElementById('app');
+        const editModal = document.getElementById('editModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalInput = document.getElementById('modalInput');
+        const editForm = document.getElementById('editForm');
+
+        let appState = {
+            view: 'mainMenu',
+            schema: {
+                'Måndag': { focus: 'Ben', workouts: [] },
+                'Tisdag': { focus: 'Rygg', workouts: [] },
+                'Onsdag': { focus: 'Vila', workouts: [] },
+                'Torsdag': { focus: 'Bröst', workouts: [] },
+                'Fredag': { focus: 'Armar', workouts: [] },
+                'Lördag': { focus: 'Kondition', workouts: [] },
+                'Söndag': { focus: 'Vila', workouts: [] }
+            },
+            logs: [],
+            currentDay: null
+        };
+
+        // Function to save the current appState to local storage.
+        function saveState() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Kunde inte spara till lokal lagring', e);
+            }
+        }
+
+        // Function to load the state from local storage on app start.
+        function loadState() {
+            try {
+                const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (storedState) {
+                    const parsedState = JSON.parse(storedState);
+                    Object.assign(appState, parsedState);
+                }
+            } catch (e) {
+                console.error('Kunde inte ladda från lokal lagring', e);
+            }
+        }
+
+        // --- Render functions ---
+
+        function render() {
+            appElement.innerHTML = ''; // Clear previous content
+            switch (appState.view) {
+                case 'mainMenu':
+                    renderMainMenu();
+                    break;
+                case 'schema':
+                    renderSchemaView();
+                    break;
+                case 'dayDetails':
+                    renderDayDetails();
+                    break;
+                case 'log':
+                    renderLogView();
+                    break;
+                case 'importExport':
+                    renderImportExportView();
+                    break;
+            }
+        }
+
+        function renderMainMenu() {
+            appElement.innerHTML = `
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold mb-8 text-gray-800">Min Träningsapp 💪</h1>
+                    <div class="space-y-4">
+                        <button class="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'schema'; render();">
+                            Schema
+                        </button>
+                        <button class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-green-700 transition duration-300 transform hover:scale-105" onclick="appState.view = 'log'; render();">
+                            Logg
+                        </button>
+                        <button class="w-full bg-yellow-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-105" onclick="appState.view = 'importExport'; render();">
+                            Import/Export (Backup)
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderHeaderWithBackButton(title, backToView) {
+            return `
+                <div class="flex items-center justify-between mb-6">
+                    <button class="text-gray-500 hover:text-gray-700 font-bold text-lg" onclick="appState.view = '${backToView}'; render();">
+                        ←
+                    </button>
+                    <h2 class="text-2xl font-bold text-gray-800 text-center flex-grow">${title}</h2>
+                </div>
+            `;
+        }
+
+        function renderSchemaView() {
+            let daysHtml = Object.keys(appState.schema).map(day => `
+                <button class="w-full bg-white text-gray-800 font-semibold py-4 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition duration-200" onclick="appState.view = 'dayDetails'; appState.currentDay = '${day}'; render();">
+                    ${day} - ${appState.schema[day].focus}
+                </button>
+            `).join('');
+
+            appElement.innerHTML = `
+                ${renderHeaderWithBackButton('Schema', 'mainMenu')}
+                <div class="space-y-3 mb-6">
+                    ${daysHtml}
+                </div>
+            `;
+        }
+        
+        function renderDayDetails() {
+            const dayData = appState.schema[appState.currentDay];
+            let workoutsHtml = dayData.workouts.length > 0 ? dayData.workouts.map((workout, index) => `
+                <div class="bg-gray-50 p-4 rounded-xl shadow-sm mb-2 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-700">${workout.name}</h4>
+                        <p class="text-sm text-gray-600">
+                            Reps: <span class="font-semibold">${workout.reps}</span>, Vikter: <span class="font-semibold">${workout.weights}kg</span>
+                        </p>
+                    </div>
+                    <div class="space-x-2">
+                        <button class="text-blue-600 hover:text-blue-800 font-bold" onclick="showEditModal('workout', ${index}, 'reps');">Reps</button>
+                        <button class="text-blue-600 hover:text-blue-800 font-bold" onclick="showEditModal('workout', ${index}, 'weights');">Vikter</button>
+                        <button class="text-red-600 hover:text-red-800 font-bold" onclick="deleteWorkout(${index});">Radera</button>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-center text-gray-500 italic">Inga pass inlagda.</p>';
+        
+            appElement.innerHTML = `
+                ${renderHeaderWithBackButton(appState.currentDay, 'schema')}
+                
+                <div class="flex items-center justify-between space-x-2 mb-4">
+                    <p class="text-xl font-semibold text-gray-600">Fokus: ${dayData.focus}</p>
+                    <button class="text-blue-600 hover:text-blue-800 font-bold text-sm" onclick="showEditModal('focus', null, null, '${appState.currentDay}');">Ändra fokus</button>
+                </div>
+                
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Pass</h3>
+                <div class="mb-6 max-h-64 overflow-y-auto">
+                    ${workoutsHtml}
+                </div>
+        
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">Lägg till nytt pass</h3>
+                <form id="addWorkoutForm" class="space-y-2 mb-6">
+                    <input type="text" id="workoutName" placeholder="Passnamn" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="number" id="workoutReps" placeholder="Reps" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="number" id="workoutWeights" placeholder="Vikter (kg)" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                        Lägg till pass
+                    </button>
+                </form>
+        
+                <div class="space-y-2">
+                    <button class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300" onclick="logWorkout();">
+                        Logga dagens pass
+                    </button>
+                </div>
+            `;
+        
+            document.getElementById('addWorkoutForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const name = document.getElementById('workoutName').value;
+                const reps = document.getElementById('workoutReps').value;
+                const weights = document.getElementById('workoutWeights').value;
+                if (name && reps && weights) {
+                    addWorkout(name, reps, weights);
+                    // Clear the form fields after successful addition
+                    document.getElementById('workoutName').value = '';
+                    document.getElementById('workoutReps').value = '';
+                    document.getElementById('workoutWeights').value = '';
+                }
+            });
+        }
+
+        function renderLogView() {
+            let logsHtml = appState.logs.length > 0 ? appState.logs.map(log => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-4">
+                    <h4 class="text-xl font-bold text-gray-800">${log.date} - ${log.day} (${log.focus})</h4>
+                    <ul class="list-disc list-inside mt-2 text-gray-700">
+                        ${log.workouts.map(w => `
+                            <li>${w.name}: ${w.reps} reps, ${w.weights} kg</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('') : '<p class="text-center text-gray-500 italic">Inga pass har loggats ännu.</p>';
+
+            appElement.innerHTML = `
+                ${renderHeaderWithBackButton('Logg', 'mainMenu')}
+                <div class="mb-6 max-h-96 overflow-y-auto space-y-4">
+                    ${logsHtml}
+                </div>
+            `;
+        }
+
+        function renderImportExportView() {
+            const currentData = JSON.stringify(appState, null, 2);
+            appElement.innerHTML = `
+                ${renderHeaderWithBackButton('Import/Export', 'mainMenu')}
+                <p class="text-gray-700 mb-4 text-center">Använd denna data för att säkerhetskopiera din app. Klistra in data i rutan nedan och klicka på "Importera" för att ladda din backup.</p>
+                
+                <div class="mb-4">
+                    <label for="exportData" class="block text-gray-700 font-bold mb-2">Exportera data:</label>
+                    <textarea id="exportData" readonly class="w-full h-48 p-3 border border-gray-300 rounded-lg bg-gray-100 font-mono text-sm focus:outline-none">${currentData}</textarea>
+                    <button class="w-full bg-blue-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-blue-700 transition duration-300" onclick="copyToClipboard();">
+                        Kopiera till urklipp
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="importData" class="block text-gray-700 font-bold mb-2">Importera data:</label>
+                    <textarea id="importData" placeholder="Klistra in din backup-data här..." class="w-full h-48 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <button class="w-full bg-green-600 text-white font-bold py-2 mt-2 rounded-lg hover:bg-green-700 transition duration-300" onclick="importData();">
+                        Importera
+                    </button>
+                </div>
+            `;
+        }
+
+        // --- Data manipulation functions ---
+        
+        function addWorkout(name, reps, weights) {
+            appState.schema[appState.currentDay].workouts.push({
+                name,
+                reps: parseInt(reps),
+                weights: parseFloat(weights)
+            });
+            saveState();
+            render();
+        }
+
+        function deleteWorkout(index) {
+            if (confirm(`Är du säker på att du vill radera ${appState.schema[appState.currentDay].workouts[index].name}?`)) {
+                appState.schema[appState.currentDay].workouts.splice(index, 1);
+                saveState();
+                render();
+            }
+        }
+        
+        function logWorkout() {
+            const dayData = appState.schema[appState.currentDay];
+            if (dayData.workouts.length > 0) {
+                const today = new Date().toLocaleDateString('sv-SE');
+                // Check if a log for this date already exists to prevent duplicates
+                const existingLog = appState.logs.find(log => log.date === today);
+                if (existingLog) {
+                    alert('Du har redan loggat ett pass idag.');
+                    return;
+                }
+        
+                appState.logs.unshift({
+                    date: today,
+                    day: appState.currentDay,
+                    focus: dayData.focus,
+                    workouts: JSON.parse(JSON.stringify(dayData.workouts)) // Deep copy
+                });
+                saveState();
+                alert(`Dagens pass för ${appState.currentDay} har loggats!`);
+                appState.view = 'log';
+                render();
+            } else {
+                alert('Det finns inga pass att logga för denna dag.');
+            }
+        }
+
+        // --- Modal functions for editing ---
+        
+        let currentEditDetails = {};
+        
+        function showEditModal(type, index, field, day) {
+            currentEditDetails = { type, index, field, day };
+            editModal.classList.remove('hidden');
+        
+            if (type === 'workout') {
+                const workout = appState.schema[appState.currentDay].workouts[index];
+                if (field === 'reps') {
+                    modalTitle.textContent = `Ändra reps för ${workout.name}`;
+                    modalInput.value = workout.reps;
+                    modalInput.type = 'number';
+                } else if (field === 'weights') {
+                    modalTitle.textContent = `Ändra vikter för ${workout.name}`;
+                    modalInput.value = workout.weights;
+                    modalInput.type = 'number';
+                }
+            } else if (type === 'focus') {
+                modalTitle.textContent = `Ändra fokus för ${day}`;
+                modalInput.value = appState.schema[day].focus;
+                modalInput.type = 'text';
+            }
+            modalInput.focus();
+        }
+        
+        function closeModal() {
+            editModal.classList.add('hidden');
+            editForm.reset();
+        }
+        
+        editForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newValue = modalInput.value.trim();
+        
+            if (newValue === '') {
+                alert('Värdet kan inte vara tomt.');
+                return;
+            }
+        
+            if (currentEditDetails.type === 'workout') {
+                const { index, field } = currentEditDetails;
+                const workout = appState.schema[appState.currentDay].workouts[index];
+        
+                if (field === 'reps') {
+                    workout.reps = parseInt(newValue);
+                } else if (field === 'weights') {
+                    workout.weights = parseFloat(newValue);
+                }
+            } else if (currentEditDetails.type === 'focus') {
+                const { day } = currentEditDetails;
+                appState.schema[day].focus = newValue;
+            }
+        
+            saveState();
+            closeModal();
+            render();
+        });
+        
+        // --- Backup functions ---
+        
+        function copyToClipboard() {
+            const textarea = document.getElementById('exportData');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    alert('Data kopierad till urklipp! ✅');
+                }).catch(err => {
+                    console.error('Kunde inte kopiera text: ', err);
+                    alert('Kunde inte kopiera data, kopiera manuellt.');
+                });
+            } else {
+                textarea.select();
+                document.execCommand('copy');
+                alert('Data kopierad till urklipp! ✅');
+            }
+        }
+        
+        function importData() {
+            try {
+                const textarea = document.getElementById('importData');
+                const newData = JSON.parse(textarea.value);
+                
+                // Enhanced validation
+                if (newData.schema && newData.logs && typeof newData.schema === 'object' && Array.isArray(newData.logs)) {
+                    Object.assign(appState, newData);
+                    saveState();
+                    alert('Data har importerats framgångsrikt! 🎉');
+                    appState.view = 'mainMenu';
+                    render();
+                } else {
+                    throw new Error('Ogiltigt dataformat. Kontrollera att din backup innehåller "schema" och "logs".');
+                }
+            } catch (e) {
+                alert(`Kunde inte importera data. Fel: ${e.message}`);
+            }
+        }
+        
+        // Initial load and render
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            render();
+        });
+    </script>
 </body>
 </html>
