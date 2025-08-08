@@ -229,7 +229,22 @@
                 <div class="mb-6 max-h-96 overflow-y-auto space-y-4">
                     ${logsHtml}
                 </div>
+                ${appState.logs.length > 0 ? `
+                    <div class="mt-4">
+                        <button class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition duration-300" onclick="clearLogs();">
+                            Radera hela loggen
+                        </button>
+                    </div>
+                ` : ''}
             `;
+        }
+
+        function clearLogs() {
+            if (confirm("Är du säker på att du vill radera hela loggen? Denna åtgärd går inte att ångra.")) {
+                appState.logs = [];
+                saveState();
+                render();
+            }
         }
         
         function renderImportExportView() {
