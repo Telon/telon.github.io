@@ -56,17 +56,17 @@
     </style>
 </head>
 <body class="bg-gray-900 flex items-center justify-center min-h-screen text-gray-200">
-    <div id="app" class="shadow-2xl rounded-3xl w-full max-w-md p-6 m-4 relative">
-        </div>
-
+    <div id="app" class="shadow-2xl rounded-3xl w-full max-w-md p-4 sm:p-6 m-2 sm:m-4 relative">
+        <!-- Content rendered by JS -->
+    </div>
     <div id="editModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
-        <div class="relative bg-gray-800 rounded-2xl shadow-xl p-6 m-4 w-full max-w-md border border-gray-700">
-            <h3 class="text-xl font-bold mb-4 text-gray-100" id="modalTitle"></h3>
+        <div class="relative bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 m-2 sm:m-4 w-full max-w-md border border-gray-700">
+            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-100" id="modalTitle"></h3>
             <form id="editForm">
-                <input type="text" id="modalInput" class="w-full p-3 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4 bg-gray-700 text-gray-100" required>
+                <input type="text" id="modalInput" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4 bg-gray-700 text-gray-100" required>
                 <div class="flex justify-end space-x-2">
-                    <button type="button" class="bg-gray-600 text-gray-100 font-bold py-2 px-4 rounded-lg hover:bg-gray-500 transition duration-200" onclick="closeModal()">Avbryt</button>
-                    <button type="submit" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-200">Spara</button>
+                    <button type="button" class="bg-gray-600 text-gray-100 font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-500 transition duration-200" onclick="closeModal()">Avbryt</button>
+                    <button type="submit" class="bg-purple-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-purple-700 transition duration-200">Spara</button>
                 </div>
             </form>
         </div>
@@ -257,55 +257,52 @@
         function renderDayDetails() {
             const dayData = appState.schema[appState.currentDay];
             let workoutsHtml = dayData.workouts.length > 0 ? dayData.workouts.map((workout, index) => `
-                <div class="card p-4 flex justify-between items-center mb-2">
+                <div class="card p-4 mb-4 flex flex-col gap-3">
                     <div>
-                        <h4 class="font-bold text-lg text-gray-100">${workout.name}</h4>
-                        <p class="text-sm text-gray-400 mt-1">
-                            Reps: <span class="font-semibold">${workout.reps}</span>, Sets: <span class="font-semibold">${workout.sets}</span>, Vikter: <span class="font-semibold">${workout.weights}kg</span>, Övrigt: <span class="font-semibold">${workout.other || '-'}</span>
-                        </p>
+                        <h4 class="font-bold text-lg sm:text-xl text-gray-100">${workout.name}</h4>
+                        <div class="flex flex-col gap-1 mt-2 text-sm sm:text-base text-gray-400">
+                            <div>Reps: <span class="font-semibold">${workout.reps}</span></div>
+                            <div>Sets: <span class="font-semibold">${workout.sets}</span></div>
+                            <div>Vikter: <span class="font-semibold">${workout.weights !== "" ? workout.weights + "kg" : "-"}</span></div>
+                            <div>Övrigt: <span class="font-semibold">${workout.other || '-'}</span></div>
+                        </div>
                     </div>
-                    <div class="space-x-2 flex-shrink-0">
-                        <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('workout', ${index}, 'reps');">Reps</button>
-                        <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('workout', ${index}, 'sets');">Sets</button>
-                        <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('workout', ${index}, 'weights');">Vikter</button>
-                        <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('workout', ${index}, 'other');">Övrigt</button>
-                        <button class="text-red-500 hover:text-red-400 font-bold text-sm" onclick="deleteWorkout(${index});">Radera</button>
+                    <div class="flex gap-2 mt-2">
+                        <button class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition" onclick="showEditModal('workout', ${index});">Redigera</button>
+                        <button class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition" onclick="deleteWorkout(${index});">Radera</button>
                     </div>
                 </div>
+                <hr class="border-gray-700 my-2">
             `).join('') : '<p class="text-center text-gray-500 italic">Inga pass inlagda.</p>';
-        
+
             appElement.innerHTML = `
                 ${renderHeaderWithBackButton(appState.currentDay, 'schema')}
-                
                 <div class="flex items-center justify-between space-x-2 mb-4 text-gray-300">
                     <p class="text-xl font-semibold">${dayData.focus}</p>
-                    <button class="text-purple-400 hover:text-purple-300 font-bold text-sm" onclick="showEditModal('focus', null, null, '${appState.currentDay}');">Ändra fokus</button>
+                    <button class="text-purple-400 hover:text-purple-300 font-bold text-sm sm:text-base px-3 py-2 rounded transition" onclick="showEditModal('focus', null, null, '${appState.currentDay}');">Ändra fokus</button>
                 </div>
-                
                 <h3 class="text-xl font-semibold mb-4 text-gray-100">Pass</h3>
-                <div class="mb-6 space-y-2">
+                <div class="mb-6 space-y-4">
                     ${workoutsHtml}
                 </div>
-        
                 <h3 class="text-xl font-semibold mb-2 text-gray-100">Lägg till nytt pass</h3>
-                <form id="addWorkoutForm" class="space-y-2 mb-6">
-                    <input type="text" id="workoutName" placeholder="Passnamn" class="w-full p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                    <input type="number" id="workoutReps" placeholder="Reps" class="w-full p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                    <input type="number" id="workoutSets" placeholder="Sets" class="w-full p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                    <input type="number" id="workoutWeights" placeholder="Vikter (kg)" class="w-full p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                    <input type="text" id="workoutOther" placeholder="Övrigt (t.ex. superset)" class="w-full p-3 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300">
+                <form id="addWorkoutForm" class="space-y-3 mb-8">
+                    <input type="text" id="workoutName" placeholder="Passnamn" class="w-full p-4 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base" required>
+                    <input type="number" id="workoutReps" placeholder="Reps" class="w-full p-4 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base" required>
+                    <input type="number" id="workoutSets" placeholder="Sets" class="w-full p-4 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base" required>
+                    <input type="number" id="workoutWeights" placeholder="Vikter (kg)" class="w-full p-4 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base">
+                    <input type="text" id="workoutOther" placeholder="Övrigt (t.ex. superset)" class="w-full p-4 card rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base">
+                    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300 text-lg">
                         Lägg till pass
                     </button>
                 </form>
-        
                 <div class="space-y-2">
-                    <button class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300" onclick="logWorkout();">
+                    <button class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 transition duration-300 text-lg" onclick="logWorkout();">
                         Logga dagens pass
                     </button>
                 </div>
             `;
-        
+
             document.getElementById('addWorkoutForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 const name = document.getElementById('workoutName').value;
@@ -393,7 +390,7 @@
                 name,
                 reps: parseInt(reps),
                 sets: parseInt(sets),
-                weights: parseFloat(weights),
+                weights: weights === "" ? "" : parseFloat(weights),
                 other: other.trim()
             });
             saveState();
@@ -440,80 +437,69 @@
         function showEditModal(type, index, field, day) {
             currentEditDetails = { type, index, field, day };
             editModal.classList.remove('hidden');
-        
+
             if (type === 'workout') {
                 const workout = appState.schema[appState.currentDay].workouts[index];
-                switch (field) {
-                    case 'reps':
-                        modalTitle.textContent = `Ändra reps för ${workout.name}`;
-                        modalInput.value = workout.reps;
-                        modalInput.type = 'number';
-                        break;
-                    case 'sets':
-                        modalTitle.textContent = `Ändra sets för ${workout.name}`;
-                        modalInput.value = workout.sets;
-                        modalInput.type = 'number';
-                        break;
-                    case 'weights':
-                        modalTitle.textContent = `Ändra vikter för ${workout.name}`;
-                        modalInput.value = workout.weights;
-                        modalInput.type = 'number';
-                        break;
-                    case 'other':
-                        modalTitle.textContent = `Ändra övrigt för ${workout.name}`;
-                        modalInput.value = workout.other;
-                        modalInput.type = 'text';
-                        break;
-                }
+                modalTitle.textContent = `Redigera pass: ${workout.name}`;
+                modalInput.type = 'hidden'; // Hide the single input
+
+                // Build a custom form for editing all fields
+                editForm.innerHTML = `
+                    <label for="editName" class="block text-gray-400 mb-1">Passnamn</label>
+                    <input type="text" id="editName" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg mb-3 bg-gray-700 text-gray-100" value="${workout.name}" required>
+                    <label for="editReps" class="block text-gray-400 mb-1">Reps</label>
+                    <input type="number" id="editReps" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg mb-3 bg-gray-700 text-gray-100" value="${workout.reps}" required>
+                    <label for="editSets" class="block text-gray-400 mb-1">Sets</label>
+                    <input type="number" id="editSets" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg mb-3 bg-gray-700 text-gray-100" value="${workout.sets}" required>
+                    <label for="editWeights" class="block text-gray-400 mb-1">Vikter (kg)</label>
+                    <input type="number" id="editWeights" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg mb-3 bg-gray-700 text-gray-100" value="${workout.weights}">
+                    <label for="editOther" class="block text-gray-400 mb-1">Övrigt</label>
+                    <input type="text" id="editOther" class="w-full p-2 sm:p-3 border border-gray-700 rounded-lg mb-4 bg-gray-700 text-gray-100" value="${workout.other}">
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" class="bg-gray-600 text-gray-100 font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-500 transition duration-200" onclick="closeModal()">Avbryt</button>
+                        <button type="submit" class="bg-purple-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-purple-700 transition duration-200">Spara</button>
+                    </div>
+                `;
+                editForm.onsubmit = function(event) {
+                    event.preventDefault();
+                    workout.name = document.getElementById('editName').value.trim();
+                    workout.reps = parseInt(document.getElementById('editReps').value);
+                    workout.sets = parseInt(document.getElementById('editSets').value);
+                    const weightsValue = document.getElementById('editWeights').value.trim();
+                    workout.weights = weightsValue === "" ? "" : parseFloat(weightsValue);
+                    workout.other = document.getElementById('editOther').value.trim();
+                    saveState();
+                    closeModal();
+                    render();
+                };
             } else if (type === 'focus') {
                 modalTitle.textContent = `Ändra fokus för ${day}`;
-                modalInput.value = appState.schema[day].focus;
                 modalInput.type = 'text';
+                modalInput.value = appState.schema[day].focus;
+                editForm.innerHTML = '';
+                editForm.appendChild(modalInput);
+                editForm.appendChild(document.createElement('br'));
+                const btnGroup = document.createElement('div');
+                btnGroup.className = "flex justify-end space-x-2 mt-4";
+                btnGroup.innerHTML = `
+                    <button type="button" class="bg-gray-600 text-gray-100 font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-500 transition duration-200" onclick="closeModal()">Avbryt</button>
+                    <button type="submit" class="bg-purple-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg hover:bg-purple-700 transition duration-200">Spara</button>
+                `;
+                editForm.appendChild(btnGroup);
+                editForm.onsubmit = function(event) {
+                    event.preventDefault();
+                    appState.schema[day].focus = modalInput.value.trim();
+                    saveState();
+                    closeModal();
+                    render();
+                };
             }
-            modalInput.focus();
         }
         
         function closeModal() {
             editModal.classList.add('hidden');
             editForm.reset();
         }
-        
-        editForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const newValue = modalInput.value.trim();
-        
-            if (newValue === '') {
-                alert('Värdet kan inte vara tomt.');
-                return;
-            }
-        
-            if (currentEditDetails.type === 'workout') {
-                const { index, field } = currentEditDetails;
-                const workout = appState.schema[appState.currentDay].workouts[index];
-                
-                switch (field) {
-                    case 'reps':
-                        workout.reps = parseInt(newValue);
-                        break;
-                    case 'sets':
-                        workout.sets = parseInt(newValue);
-                        break;
-                    case 'weights':
-                        workout.weights = parseFloat(newValue);
-                        break;
-                    case 'other':
-                        workout.other = newValue;
-                        break;
-                }
-            } else if (currentEditDetails.type === 'focus') {
-                const { day } = currentEditDetails;
-                appState.schema[day].focus = newValue;
-            }
-        
-            saveState();
-            closeModal();
-            render();
-        });
         
         // --- Backup functions ---
         
