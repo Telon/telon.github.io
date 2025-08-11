@@ -267,9 +267,13 @@
                             <div>Övrigt: <span class="font-semibold">${workout.other || '-'}</span></div>
                         </div>
                     </div>
-                    <div class="flex gap-2 mt-2">
+                    <div class="flex gap-2 mt-2 flex-wrap">
                         <button class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition" onclick="showEditModal('workout', ${index});">Redigera</button>
                         <button class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition" onclick="deleteWorkout(${index});">Radera</button>
+                        <div class="flex gap-1">
+                            <button class="bg-gray-700 text-white font-bold py-2 px-3 rounded-lg hover:bg-gray-600 transition" title="Flytta upp" onclick="moveWorkoutUp(${index});" ${index === 0 ? 'disabled' : ''}>↑</button>
+                            <button class="bg-gray-700 text-white font-bold py-2 px-3 rounded-lg hover:bg-gray-600 transition" title="Flytta ner" onclick="moveWorkoutDown(${index});" ${index === dayData.workouts.length - 1 ? 'disabled' : ''}>↓</button>
+                        </div>
                     </div>
                 </div>
                 <hr class="border-gray-700 my-2">
@@ -568,6 +572,24 @@
             }
         }
         
+        function moveWorkoutUp(index) {
+            const workouts = appState.schema[appState.currentDay].workouts;
+            if (index > 0) {
+                [workouts[index - 1], workouts[index]] = [workouts[index], workouts[index - 1]];
+                saveState();
+                render();
+            }
+        }
+
+        function moveWorkoutDown(index) {
+            const workouts = appState.schema[appState.currentDay].workouts;
+            if (index < workouts.length - 1) {
+                [workouts[index], workouts[index + 1]] = [workouts[index + 1], workouts[index]];
+                saveState();
+                render();
+            }
+        }
+
         // Initial load and render
         document.addEventListener('DOMContentLoaded', () => {
             loadState();
