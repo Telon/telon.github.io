@@ -3,34 +3,31 @@
   "view": "importExport",
   "schema": {
     "Måndag": {
-      "focus": "Tryck & armar (bröst, axlar, triceps, biceps)",
+      "focus": "Vila",
+      "workouts": []
+    },
+    "Tisdag": {
+      "focus": "Bröst & rygg",
       "workouts": [
         {
-          "name": "Armhävningar",
-          "reps": 15,
+          "name": "Bänkpress",
+          "reps": 12,
+          "sets": 3,
+          "weights": 40,
+          "other": ""
+        },
+        {
+          "name": "Lateral raise",
+          "reps": 12,
           "sets": 3,
           "weights": 0,
-          "other": ""
+          "other": "Gummiband"
         },
         {
-          "name": "Chest Flys",
+          "name": "Skivstångsrodd",
           "reps": 12,
           "sets": 3,
-          "weights": 5,
-          "other": ""
-        },
-        {
-          "name": "Liggande tricepspress",
-          "reps": 12,
-          "sets": 3,
-          "weights": 7,
-          "other": ""
-        },
-        {
-          "name": "Biceps curls",
-          "reps": 12,
-          "sets": 3,
-          "weights": 7,
+          "weights": 20,
           "other": ""
         },
         {
@@ -41,113 +38,59 @@
           "other": ""
         },
         {
-          "name": "Lateral raise",
-          "reps": 12,
+          "name": "Armhävningar",
+          "reps": 100,
           "sets": 3,
           "weights": 0,
-          "other": "Gummiband"
-        },
-        {
-          "name": "Abroller",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
+          "other": "Max antal x3"
         }
       ]
-    },
-    "Tisdag": {
-      "focus": "Vila / Promenad",
-      "workouts": []
     },
     "Onsdag": {
-      "focus": "Rygg & baksida axlar",
-      "workouts": [
-        {
-          "name": "One arm row",
-          "reps": 12,
-          "sets": 3,
-          "weights": 10,
-          "other": ""
-        },
-        {
-          "name": "Reverse flys",
-          "reps": 12,
-          "sets": 3,
-          "weights": 5,
-          "other": ""
-        },
-        {
-          "name": "Stående rodd",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "TRX"
-        },
-        {
-          "name": "Face pulls",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "TRX"
-        },
-        {
-          "name": "Lateral raise",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "Gummiband"
-        }
-      ]
+      "focus": "Vila",
+      "workouts": []
     },
     "Torsdag": {
       "focus": "Knäfokus / Ben / Glute ReHab",
       "workouts": [
         {
-          "name": "Banded glute bridge",
+          "name": "Ab-Roller",
           "reps": 12,
           "sets": 3,
           "weights": 0,
-          "other": "Gummiband runt benen"
+          "other": ""
         },
         {
-          "name": "Monsterwalks",
-          "reps": 10,
+          "name": "Calf Riases",
+          "reps": 12,
           "sets": 3,
           "weights": 0,
-          "other": "Gummiband runt benen"
+          "other": ""
         },
         {
-          "name": "Jägarvila",
+          "name": "Hamsting Curls",
+          "reps": 12,
+          "sets": 3,
+          "weights": 0,
+          "other": ""
+        },
+        {
+          "name": "Step ups",
+          "reps": 12,
+          "sets": 3,
+          "weights": 0,
+          "other": ""
+        },
+        {
+          "name": "Terminal knee extensions",
+          "reps": 12,
+          "sets": 3,
+          "weights": 0,
+          "other": "Gummiband"
+        },
+        {
+          "name": "Plankan",
           "reps": 60,
-          "sets": 3,
-          "weights": 0,
-          "other": "Gummiband runt benen"
-        },
-        {
-          "name": "Single-leg glute bridge",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
-        },
-        {
-          "name": "Terminal knee extension",
-          "reps": 15,
-          "sets": 3,
-          "weights": 0,
-          "other": "Gummiband runt knä och i bordsben"
-        },
-        {
-          "name": "Calf raises",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
-        },
-        {
-          "name": "Abroller (Frivillig)",
-          "reps": 12,
           "sets": 3,
           "weights": 0,
           "other": ""
@@ -155,13 +98,38 @@
       ]
     },
     "Fredag": {
-      "focus": "Överkropp",
+      "focus": "Vila",
+      "workouts": []
+    },
+    "Lördag": {
+      "focus": "Rygg",
       "workouts": [
         {
-          "name": "Armhävningar",
-          "reps": 15,
+          "name": "Marklyft",
+          "reps": 12,
+          "sets": 3,
+          "weights": 40,
+          "other": ""
+        },
+        {
+          "name": "Chins/Latsdrag",
+          "reps": 12,
           "sets": 3,
           "weights": 0,
+          "other": "Testa med trx"
+        },
+        {
+          "name": "Militärpress",
+          "reps": 12,
+          "sets": 3,
+          "weights": 20,
+          "other": ""
+        },
+        {
+          "name": "Reverse flys",
+          "reps": 12,
+          "sets": 3,
+          "weights": 7,
           "other": ""
         },
         {
@@ -172,92 +140,17 @@
           "other": ""
         },
         {
-          "name": "Lateral raise",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "Gummiband"
-        },
-        {
-          "name": "One arm row",
-          "reps": 12,
-          "sets": 3,
-          "weights": 10,
-          "other": ""
-        },
-        {
-          "name": "Biceps curls",
-          "reps": 12,
-          "sets": 3,
-          "weights": 7,
-          "other": ""
-        },
-        {
-          "name": "Hammer curls",
-          "reps": 12,
-          "sets": 3,
-          "weights": 7,
-          "other": ""
-        },
-        {
-          "name": "Planka",
+          "name": "Dead hang",
           "reps": 60,
           "sets": 3,
           "weights": 0,
           "other": ""
         }
       ]
-    },
-    "Lördag": {
-      "focus": "Vila / Promenad",
-      "workouts": []
     },
     "Söndag": {
-      "focus": "Core & baksida / TRX & egenvikt",
-      "workouts": [
-        {
-          "name": "Stående rodd",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "TRX"
-        },
-        {
-          "name": "Face pulls",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": "TRX"
-        },
-        {
-          "name": "Dead hang",
-          "reps": 30,
-          "sets": 3,
-          "weights": 0,
-          "other": "TRX"
-        },
-        {
-          "name": "Banded glute bridge",
-          "reps": 12,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
-        },
-        {
-          "name": "Planka",
-          "reps": 60,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
-        },
-        {
-          "name": "Sidoplanka",
-          "reps": 60,
-          "sets": 3,
-          "weights": 0,
-          "other": ""
-        }
-      ]
+      "focus": "Vila",
+      "workouts": []
     },
     "Gym": {
       "focus": "Helkroppspass",
@@ -267,28 +160,28 @@
           "reps": 12,
           "sets": 3,
           "weights": 45,
-          "other": ""
+          "other": "Elin - 30kg"
         },
         {
           "name": "Axelpress",
           "reps": 12,
           "sets": 3,
           "weights": 35,
-          "other": ""
+          "other": "Elin - 30kg"
         },
         {
           "name": "Latsdrag",
           "reps": 12,
           "sets": 3,
           "weights": 30,
-          "other": ""
+          "other": "Elin - 22.5Kg"
         },
         {
           "name": "Rodd",
           "reps": 12,
           "sets": 3,
           "weights": 35,
-          "other": ""
+          "other": "Elin - 27.5Kg"
         },
         {
           "name": "Dips",
@@ -315,5 +208,5 @@
     }
   },
   "logs": [],
-  "currentDay": "Söndag"
+  "currentDay": "Lördag"
 }
